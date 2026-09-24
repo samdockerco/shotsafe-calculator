@@ -84,12 +84,12 @@
 <body>
 <div class="calc">
   <h2 class="calc-title">How big a drive do you need?</h2>
-  <p class="calc-sub">Work out the storage to hold a year of shoots — RAWs and your delivered edits. Drag the sliders, or type your numbers.</p>
+  <p class="calc-sub">Work out the storage to hold a year of shoots, RAWs and your delivered edits. Drag the sliders, or type your numbers.</p>
 
   <div class="section-label first">Your cameras</div>
   <div class="stack" id="cameras"></div>
   <button class="add-btn" id="addCam">+ Add another camera</button>
-  <p class="add-note">Shoot on more than one body? Add each — we'll average their file sizes across your shoots.</p>
+  <p class="add-note">Shoot on more than one body? Add each, and we'll average their file sizes across your shoots.</p>
 
   <div class="section-label">Your shoots</div>
   <div class="stack" id="shoots"></div>
@@ -110,7 +110,7 @@
     <div class="result-suggest" id="resultSuggest"></div>
     <div class="breakdown" id="breakdown"></div>
     <div class="safety">
-      <strong>One drive holds your year — but a backup isn't a backup if it's your only copy.</strong>
+      <strong>One drive holds your year, but a backup isn't a backup if it's your only copy.</strong>
       ShotSafe automatically copies every shoot to a second drive (and your cloud) as you import. You buy the drive; ShotSafe keeps it safe. &nbsp;<a href="#" id="shotsafeLink">Meet ShotSafe →</a>
     </div>
   </div>
@@ -123,22 +123,22 @@
         <button data-region="us">🇺🇸 US</button>
       </div>
     </div>
-    <p class="drives-intro">Both types are great — pick what suits your budget and workflow. SSDs are faster and pricier; modern HDDs are reliable, spacious and more affordable — plenty of pros (us included) run HDDs happily.</p>
+    <p class="drives-intro">Both types are great; pick what suits your budget and workflow. SSDs are faster and pricier; modern HDDs are reliable, spacious and more affordable, and plenty of pros (us included) run HDDs happily.</p>
 
     <div class="drive-group">
       <div class="dg-label">Solid State (SSD)</div>
-      <div class="dg-desc">Fastest transfers and culling, compact and rugged — a premium choice, ideal as your main drive.</div>
+      <div class="dg-desc">Fastest transfers and culling, compact and rugged; a premium choice, ideal as your main drive.</div>
       <div class="drive-links" id="ssdLinks"></div>
     </div>
     <div class="drive-group">
       <div class="dg-label">Hard Drive (HDD)</div>
-      <div class="dg-desc">Excellent value and huge capacity, a reliable workhorse — plenty fast for storage and backup.</div>
+      <div class="dg-desc">Excellent value and huge capacity, a reliable workhorse, plenty fast for storage and backup.</div>
       <div class="drive-links" id="hddLinks"></div>
     </div>
 
     <p class="disclosure">
-      Drive suggestions are just that — suggestions. We can't be held responsible for any drive's performance, failure, or data loss, so always check current specs and reviews before buying, and always keep at least two copies of your images (which is exactly what ShotSafe does).
-      These are affiliate links — we may earn a small commission at no cost to you. We only suggest well-reviewed drives from brands we trust.
+      Drive suggestions are just that, suggestions. We can't be held responsible for any drive's performance, failure, or data loss, so always check current specs and reviews before buying, and always keep at least two copies of your images (which is exactly what ShotSafe does).
+      These are affiliate links, so we may earn a small commission at no cost to you. We only suggest well-reviewed drives from brands we trust.
     </p>
   </div>
 </div>
@@ -273,7 +273,7 @@ document.querySelectorAll('.region-toggle button').forEach(btn=>btn.addEventList
 const suggestDrive=tb=>{for(const s of DRIVE_SIZES){if(s>=tb)return s;}return DRIVE_SIZES[DRIVE_SIZES.length-1];};
 
 function renderDriveLinks(list){
-  if(!list||!list.length) return '<p class="disclosure" style="margin-top:0;">No option at this size — see the other type.</p>';
+  if(!list||!list.length) return '<p class="disclosure" style="margin-top:0;">No option at this size; see the other type.</p>';
   return list.map(d=>`<a class="drive-link" href="${d[region]||'#'}" target="_blank" rel="noopener sponsored"><span>${d.name}</span><span class="arrow">→</span></a>`).join('');
 }
 
@@ -305,7 +305,7 @@ function calc(){
   const shown=totalTB<1?totalTB.toFixed(2):totalTB<10?totalTB.toFixed(1):Math.round(totalTB);
   document.getElementById('resultBig').innerHTML=`${shown}<span> TB</span>`;
   const suggested=suggestDrive(totalTB);
-  document.getElementById('resultSuggest').textContent=`We'd suggest a ${suggested}TB drive — your year with room to spare.`;
+  document.getElementById('resultSuggest').textContent=`We'd suggest a ${suggested}TB drive, your year with room to spare.`;
   document.getElementById('breakdown').innerHTML=parts.map(p=>`<div class="breakdown-row"><span>${p.label}</span><span>${p.tb<1?(p.tb*1000).toFixed(0)+' GB':p.tb.toFixed(2)+' TB'}</span></div>`).join('')+`<div class="breakdown-row" style="font-weight:700;color:var(--text);margin-top:6px;"><span>+ ${bufferEl.value}% buffer</span><span>${shown} TB total</span></div>`;
 
   const set=DRIVES[suggested]||DRIVES[Object.keys(DRIVES).map(Number).reverse().find(s=>s>=suggested)]||{ssd:[],hdd:[]};
