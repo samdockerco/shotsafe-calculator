@@ -145,10 +145,14 @@
 
 <script>
 const CAMERAS = {
-  Canon: { "EOS R5 / R5 II (45MP)":48, "EOS R6 / R6 II (24MP)":28, "EOS R3 (24MP)":30, "EOS R8 (24MP)":27, "EOS 5D Mark IV (30MP)":37, "EOS R (30MP)":34 },
-  Nikon: { "Z8 / Z9 (45MP)":55, "Z7 II (45MP)":55, "Z6 III (24MP)":30, "Z6 II (24MP)":28, "Z5 II (24MP)":28, "D850 (45MP)":53, "D780 (24MP)":30 },
-  Sony:  { "A7R V (61MP)":65, "A7 IV (33MP)":42, "A7 III (24MP)":25, "A9 III (24MP)":26, "A1 (50MP)":50 },
-  Fujifilm: { "GFX 100 II / 100S II (102MP)":68, "GFX 50S II / 50R (51MP)":55, "X-T5 / X-H2 (40MP)":48, "X100VI (40MP)":48, "X-T4 / X-S20 (26MP)":28, "X-T30 II (26MP)":28 }
+  Canon: { "EOS R5 / R5 II (45MP)":48, "EOS R3 (24MP)":30, "EOS R6 / R6 II (24MP)":28, "EOS R8 (24MP)":27, "EOS R7 (33MP APS-C)":35, "EOS R10 (24MP APS-C)":26, "EOS R50 / R100 (24MP APS-C)":25, "EOS R (30MP)":34, "EOS RP (26MP)":30, "EOS 5D Mark IV (30MP)":37, "EOS 6D Mark II (26MP)":30, "EOS 1DX Mark III (20MP)":25, "EOS 7D Mark II (20MP)":24 },
+  Nikon: { "Z8 / Z9 (45MP)":55, "Z7 / Z7 II (45MP)":55, "Z6 III (24MP)":30, "Z6 / Z6 II (24MP)":28, "Zf (24MP)":28, "Z5 / Z5 II (24MP)":28, "Zfc / Z50 / Z50 II (21MP APS-C)":24, "Z30 (21MP APS-C)":24, "D850 (45MP)":53, "D780 (24MP)":30, "D750 (24MP)":29, "D810 (36MP)":41, "D6 / D5 (20MP)":25 },
+  Sony:  { "A1 (50MP)":50, "A7R V (61MP)":65, "A7R IV (61MP)":65, "A7R III (42MP)":45, "A7 IV (33MP)":42, "A7 III (24MP)":25, "A7C II (33MP)":42, "A7C (24MP)":25, "A9 III (24MP)":26, "A9 II (24MP)":25, "A6700 (26MP APS-C)":28, "A6400 / A6600 (24MP APS-C)":24 },
+  Fujifilm: { "GFX 100 II / 100S II (102MP)":68, "GFX 50S II / 50R (51MP)":55, "X-T5 / X-H2 (40MP)":48, "X100VI (40MP)":48, "X-H2S (26MP)":30, "X-T4 / X-S20 (26MP)":28, "X-T3 (26MP)":30, "X-Pro3 / X-E4 (26MP)":28, "X-T30 II (26MP)":28 },
+  Panasonic: { "Lumix S1R II (45MP)":52, "Lumix S1 II / S1R (24-47MP)":38, "Lumix S5 II / S5 IIX (24MP)":30, "Lumix S5 (24MP)":30, "Lumix GH6 / GH7 (25MP MFT)":30, "Lumix G9 II (25MP MFT)":30 },
+  "OM System / Olympus": { "OM-1 / OM-1 II (20MP MFT)":22, "OM-5 (20MP MFT)":22, "E-M1 Mark III (20MP MFT)":22, "E-M5 Mark III (20MP MFT)":22 },
+  Leica: { "SL3 (60MP)":70, "SL2 (47MP)":55, "Q3 (60MP)":70, "M11 (60MP)":70, "M10 (24MP)":30 },
+  "Other / not listed": { "Enter your average RAW size below":0 }
 };
 const PROJECT_TYPES = ["Wedding","Family","Portrait","Event","Commercial","Newborn","Other"];
 const PROJECT_DEFAULTS = {
@@ -245,13 +249,16 @@ function addCamera(){
     <div class="card-grid2">
       <div class="field"><label>Brand</label><select class="c-brand">${brandOpts()}</select></div>
       <div class="field"><label>Model</label><select class="c-model">${modelOpts(fb)}</select></div>
-    </div>`;
+    </div>
+    <div class="field c-other-wrap" style="display:none;margin-top:10px;"><label>Your average RAW file size (MB)</label><input type="number" class="c-other-mb" min="0" value="30" inputmode="numeric"><div class="sf-hint">check a file in Finder/Explorer if unsure, typically 20-70MB</div></div>`;
   camerasEl.appendChild(card);
-  const b=card.querySelector('.c-brand'),m=card.querySelector('.c-model');
-  b.addEventListener('change',()=>{m.innerHTML=modelOpts(b.value);calc();});
+  const b=card.querySelector('.c-brand'),m=card.querySelector('.c-model'),ow=card.querySelector('.c-other-wrap');
+  function toggleOther(){ ow.style.display = (b.value==='Other / not listed') ? 'flex' : 'none'; }
+  b.addEventListener('change',()=>{m.innerHTML=modelOpts(b.value);toggleOther();calc();});
   m.addEventListener('change',calc);
+  card.querySelector('.c-other-mb').addEventListener('input',calc);
   card.querySelector('.card-remove').addEventListener('click',()=>{card.remove();refreshRemovable(camerasEl);calc();});
-  refreshRemovable(camerasEl);calc();
+  toggleOther(); refreshRemovable(camerasEl);calc();
 }
 function addShoot(){
   const card=document.createElement('div');card.className='card';
@@ -293,7 +300,7 @@ function renderDriveLinks(list){
 function calc(){
   const camCards=[...camerasEl.querySelectorAll('.card')];
   let sizes=[];
-  camCards.forEach(c=>{const b=c.querySelector('.c-brand').value,m=c.querySelector('.c-model').value;const s=CAMERAS[b]&&CAMERAS[b][m];if(s)sizes.push(s);});
+  camCards.forEach(c=>{const b=c.querySelector('.c-brand').value,m=c.querySelector('.c-model').value;let s=CAMERAS[b]&&CAMERAS[b][m];if(b==='Other / not listed'){s=parseFloat(c.querySelector('.c-other-mb').value)||0;}if(s)sizes.push(s);});
   const avgMB=sizes.length?sizes.reduce((a,x)=>a+x,0)/sizes.length:0;
 
   const shootCards=[...shootsEl.querySelectorAll('.card')];
