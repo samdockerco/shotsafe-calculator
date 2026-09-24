@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ShotSafe Storage Calculator</title>
+<style>
+  :root {
+    /* ShotSafe brand palette — light, always */
+    --bg:#F9F8F7;          /* background off-white */
+    --surface:#EAE7E0;     /* accent — card surfaces */
+    --surface-2:#e1ddd4;   /* slightly deeper surface (derived) */
+    --border:#dcd8ce;      /* soft warm border (derived) */
+    --text:#1A1A1A;        /* dark charcoal — fonts & buttons */
+    --text-soft:#6f6b64;   /* muted warm grey */
+    --accent:#F8D548;      /* gold — sliders & highlighted buttons */
+    --accent-ink:#1A1A1A;  /* charcoal text on gold */
+    --radius:14px; --radius-sm:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .calc{max-width:640px;margin:0 auto;padding:24px 18px 40px;}
+  .calc-title{font-size:22px;font-weight:700;margin:0 0 4px;}
+  .calc-sub{font-size:14px;color:var(--text-soft);margin:0 0 22px;}
+  .section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--text-soft);margin:22px 0 10px;}
+  .section-label.first{margin-top:0;}
+  .stack{display:flex;flex-direction:column;gap:12px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative;}
+  .card-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-soft);}
+  select{width:100%;padding:9px 10px;font-size:15px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);appearance:none;font-family:inherit;}
+  select:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+  .toggle-group{display:flex;gap:6px;}
+  .toggle-group button{flex:1;padding:9px 8px;font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text-soft);cursor:pointer;font-family:inherit;}
+  .toggle-group button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .card-remove{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text-soft);cursor:pointer;font-size:15px;line-height:1;display:none;}
+  .card.removable .card-remove{display:block;}
+  .card.removable{padding-top:42px;}
+  .sliderfield{margin-top:12px;}
+  .sf-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .sf-head label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-soft);}
+  .sf-num{width:74px;padding:5px 8px;font-size:15px;font-weight:700;text-align:right;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;-moz-appearance:textfield;}
+  .sf-num::-webkit-outer-spin-button,.sf-num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .sf-num:focus{outline:2px solid var(--accent);outline-offset:-1px;}
+  input[type="range"]{width:100%;accent-color:var(--accent);margin:0;}
+  .sf-hint{font-size:10.5px;color:var(--text-soft);margin-top:2px;}
+  .add-btn{margin-top:10px;width:100%;padding:11px;font-size:14px;font-weight:600;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text-soft);cursor:pointer;font-family:inherit;}
+  .add-btn:hover{border-color:var(--accent);color:var(--text);}
+  .add-note{font-size:11.5px;color:var(--text-soft);margin-top:6px;text-align:center;}
+  .buffer{margin:24px 0 8px;}
+  .buffer-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .buffer-head label{font-size:13px;font-weight:600;}
+  .buffer-val{font-size:15px;font-weight:700;color:var(--accent-ink);background:var(--accent);padding:2px 10px;border-radius:20px;}
+  .buffer-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-soft);margin-top:2px;}
+  .result{margin-top:26px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;text-align:center;}
+  .result-big{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1;}
+  .result-big span{font-size:22px;}
+  .result-cap{font-size:14px;color:var(--text-soft);margin-top:6px;}
+  .result-suggest{font-size:15px;font-weight:600;margin-top:14px;}
+  .breakdown{margin-top:16px;font-size:13px;color:var(--text-soft);text-align:left;border-top:1px solid var(--border);padding-top:14px;}
+  .breakdown-row{display:flex;justify-content:space-between;padding:2px 0;}
+  .safety{margin-top:16px;background:var(--surface-2);border-radius:var(--radius-sm);padding:14px 16px;font-size:13.5px;text-align:left;}
+  .safety strong{color:var(--text);}
+  .safety a{color:var(--accent-ink);font-weight:700;text-decoration:none;background:var(--accent);padding:2px 8px;border-radius:6px;}
+
+  .drives{margin-top:22px;}
+  .drives-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .drives-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-soft);}
+  .region-toggle{display:flex;gap:4px;}
+  .region-toggle button{padding:4px 9px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:20px;background:var(--bg);color:var(--text-soft);cursor:pointer;font-family:inherit;}
+  .region-toggle button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .drives-intro{font-size:12.5px;color:var(--text-soft);margin:0 0 14px;}
+  .drive-group{margin-bottom:16px;}
+  .dg-label{font-size:12px;font-weight:700;margin-bottom:2px;}
+  .dg-desc{font-size:12px;color:var(--text-soft);margin-bottom:8px;}
+  .drive-links{display:flex;flex-direction:column;gap:8px;}
+  .drive-link{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);text-decoration:none;font-size:14px;font-weight:600;}
+  .drive-link:hover{border-color:var(--accent);}
+  .drive-link .arrow{color:var(--text-soft);}
+  .disclosure{font-size:11px;color:var(--text-soft);margin-top:14px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="calc">
+  <h2 class="calc-title">How big a drive do you need?</h2>
+  <p class="calc-sub">Work out the storage to hold a year of shoots — RAWs and your delivered edits. Drag the sliders, or type your numbers.</p>
+
+  <div class="section-label first">Your cameras</div>
+  <div class="stack" id="cameras"></div>
+  <button class="add-btn" id="addCam">+ Add another camera</button>
+  <p class="add-note">Shoot on more than one body? Add each — we'll average their file sizes across your shoots.</p>
+
+  <div class="section-label">Your shoots</div>
+  <div class="stack" id="shoots"></div>
+  <button class="add-btn" id="addShoot">+ Add another project type</button>
+
+  <div class="buffer">
+    <div class="buffer-head">
+      <label for="buffer">Safety buffer (headroom)</label>
+      <span class="buffer-val" id="bufferVal">25%</span>
+    </div>
+    <input type="range" id="buffer" min="10" max="50" step="5" value="25">
+    <div class="buffer-labels"><span>10% · tight</span><span>25% · recommended</span><span>50% · generous</span></div>
+  </div>
+
+  <div class="result" id="result" style="display:none;">
+    <div class="result-big" id="resultBig">0<span> TB</span></div>
+    <div class="result-cap">estimated storage to hold your year</div>
+    <div class="result-suggest" id="resultSuggest"></div>
+    <div class="breakdown" id="breakdown"></div>
+    <div class="safety">
+      <strong>One drive holds your year — but a backup isn't a backup if it's your only copy.</strong>
+      ShotSafe automatically copies every shoot to a second drive (and your cloud) as you import. You buy the drive; ShotSafe keeps it safe. &nbsp;<a href="#" id="shotsafeLink">Meet ShotSafe →</a>
+    </div>
+  </div>
+
+  <div class="drives" id="drives" style="display:none;">
+    <div class="drives-head">
+      <div class="drives-title" id="drivesTitle">Recommended drives</div>
+      <div class="region-toggle">
+        <button data-region="uk" class="active">🇬🇧 UK</button>
+        <button data-region="us">🇺🇸 US</button>
+      </div>
+    </div>
+    <p class="drives-intro">Both types are great — pick what suits your budget and workflow. SSDs are faster and pricier; modern HDDs are reliable, spacious and more affordable — plenty of pros (us included) run HDDs happily.</p>
+
+    <div class="drive-group">
+      <div class="dg-label">Solid State (SSD)</div>
+      <div class="dg-desc">Fastest transfers and culling, compact and rugged — a premium choice, ideal as your main drive.</div>
+      <div class="drive-links" id="ssdLinks"></div>
+    </div>
+    <div class="drive-group">
+      <div class="dg-label">Hard Drive (HDD)</div>
+      <div class="dg-desc">Excellent value and huge capacity, a reliable workhorse — plenty fast for storage and backup.</div>
+      <div class="drive-links" id="hddLinks"></div>
+    </div>
+
+    <p class="disclosure">
+      Drive suggestions are just that — suggestions. We can't be held responsible for any drive's performance, failure, or data loss, so always check current specs and reviews before buying, and always keep at least two copies of your images (which is exactly what ShotSafe does).
+      These are affiliate links — we may earn a small commission at no cost to you. We only suggest well-reviewed drives from brands we trust.
+    </p>
+  </div>
+</div>
+
+<script>
+const CAMERAS = {
+  Canon: { "EOS R5 / R5 II (45MP)":48, "EOS R6 / R6 II (24MP)":28, "EOS R3 (24MP)":30, "EOS R8 (24MP)":27, "EOS 5D Mark IV (30MP)":37, "EOS R (30MP)":34 },
+  Nikon: { "Z8 / Z9 (45MP)":55, "Z7 II (45MP)":55, "Z6 III (24MP)":30, "Z6 II (24MP)":28, "Z5 II (24MP)":28, "D850 (45MP)":53, "D780 (24MP)":30 },
+  Sony:  { "A7R V (61MP)":65, "A7 IV (33MP)":42, "A7 III (24MP)":25, "A9 III (24MP)":26, "A1 (50MP)":50 }
+};
+const PROJECT_TYPES = ["Wedding","Family","Portrait","Event","Commercial","Newborn","Other"];
+const PROJECT_DEFAULTS = {
+  Wedding:{shoots:30,shot:2500,delivered:700}, Family:{shoots:40,shot:400,delivered:110},
+  Portrait:{shoots:40,shot:300,delivered:80}, Event:{shoots:20,shot:1200,delivered:340},
+  Commercial:{shoots:24,shot:600,delivered:170}, Newborn:{shoots:30,shot:350,delivered:100},
+  Other:{shoots:20,shot:500,delivered:140}
+};
+const JPEG_CAPTURE_MULT=1.30, DELIVERED_JPEG_MB=11, DELIVERED_RATIO=0.28;
+const DRIVE_SIZES=[1,2,4,5,8,10,12,16,18,20,22,24];
+const SHOTSAFE_URL="https://shotsafe.co";
+
+/* ------------------------------------------------------------------
+   DRIVE RECOMMENDATIONS — curate to 4★+ drives only, from the 5
+   trusted brands (LaCie, Seagate, SanDisk, WD, Samsung). REVIEW
+   PERIODICALLY (ratings shift, models get discontinued). The widget
+   can't read live star ratings, so this list is human-curated to the
+   4★+ standard. Replace url:"#" with real affiliate links per region.
+   Keyed by suggested drive size (TB).
+------------------------------------------------------------------- */
+const DRIVES = {
+  4: {
+    ssd: [ {name:"Samsung T7 Shield 4TB", uk:"#", us:"#"}, {name:"SanDisk Extreme 4TB", uk:"#", us:"#"}, {name:"LaCie Rugged SSD 4TB", uk:"#", us:"#"} ],
+    hdd: [ {name:"WD My Passport 4TB", uk:"#", us:"#"}, {name:"Seagate Expansion 4TB", uk:"#", us:"#"}, {name:"LaCie Mobile Drive 4TB", uk:"#", us:"#"} ]
+  },
+  5: {
+    ssd: [ {name:"Samsung T7 Shield 4TB", uk:"#", us:"#"}, {name:"SanDisk Extreme 4TB", uk:"#", us:"#"} ],
+    hdd: [ {name:"WD My Passport 5TB", uk:"#", us:"#"}, {name:"Seagate Expansion 5TB", uk:"#", us:"#"}, {name:"LaCie Mobile Drive 5TB", uk:"#", us:"#"} ]
+  },
+  8: {
+    ssd: [ {name:"Samsung T7 Shield 8TB", uk:"#", us:"#"}, {name:"SanDisk Extreme 8TB", uk:"#", us:"#"} ],
+    hdd: [ {name:"WD Elements Desktop 8TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 8TB", uk:"#", us:"#"}, {name:"LaCie d2 Professional 8TB", uk:"#", us:"#"} ]
+  },
+  10: {
+    ssd: [ {name:"Samsung T7 Shield 8TB", uk:"#", us:"#"} ],
+    hdd: [ {name:"WD Elements Desktop 10TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 10TB", uk:"#", us:"#"} ]
+  },
+  12: {
+    ssd: [ {name:"Samsung T7 Shield 8TB", uk:"#", us:"#"} ],
+    hdd: [ {name:"WD Elements Desktop 12TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 12TB", uk:"#", us:"#"}, {name:"LaCie d2 Professional 12TB", uk:"#", us:"#"} ]
+  },
+  16: {
+    ssd: [],
+    hdd: [ {name:"WD Elements Desktop 16TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 16TB", uk:"#", us:"#"}, {name:"LaCie d2 Professional 16TB", uk:"#", us:"#"} ]
+  },
+  18: {
+    ssd: [],
+    hdd: [ {name:"WD Elements Desktop 18TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 18TB", uk:"#", us:"#"} ]
+  },
+  20: {
+    ssd: [],
+    hdd: [ {name:"WD Elements Desktop 20TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 20TB", uk:"#", us:"#"} ]
+  }
+};
+
+let region = "uk";
+
+const camerasEl=document.getElementById('cameras'), shootsEl=document.getElementById('shoots');
+const brandOpts=()=>Object.keys(CAMERAS).map(b=>`<option value="${b}">${b}</option>`).join('');
+const modelOpts=b=>Object.keys(CAMERAS[b]).map(m=>`<option value="${m}">${m}</option>`).join('');
+const typeOpts=()=>PROJECT_TYPES.map(t=>`<option value="${t}">${t}</option>`).join('');
+function refreshRemovable(c){const r=c.querySelectorAll('.card');r.forEach(x=>x.classList.toggle('removable',r.length>1));}
+
+function sliderField(cls,label,val,min,max,step,hint){
+  return `<div class="sliderfield">
+    <div class="sf-head"><label>${label}</label><input type="number" class="sf-num ${cls}-num" min="${min}" value="${val}" inputmode="numeric"></div>
+    <input type="range" class="${cls}-range" min="${min}" max="${max}" step="${step}" value="${Math.min(val,max)}">
+    ${hint?`<div class="sf-hint">${hint}</div>`:''}</div>`;
+}
+function wireSlider(card,cls,onChange){
+  const range=card.querySelector(`.${cls}-range`), num=card.querySelector(`.${cls}-num`);
+  range.addEventListener('input',()=>{num.value=range.value;onChange();});
+  num.addEventListener('input',()=>{const v=parseFloat(num.value)||0;range.value=v<=parseFloat(range.max)?v:range.max;onChange();});
+  return {get:()=>parseFloat(num.value)||0,set:v=>{num.value=v;range.value=Math.min(v,parseFloat(range.max));}};
+}
+
+function addCamera(){
+  const fb=Object.keys(CAMERAS)[0];
+  const card=document.createElement('div');card.className='card';
+  card.innerHTML=`<button class="card-remove" title="Remove">&times;</button>
+    <div class="card-grid2">
+      <div class="field"><label>Brand</label><select class="c-brand">${brandOpts()}</select></div>
+      <div class="field"><label>Model</label><select class="c-model">${modelOpts(fb)}</select></div>
+    </div>`;
+  camerasEl.appendChild(card);
+  const b=card.querySelector('.c-brand'),m=card.querySelector('.c-model');
+  b.addEventListener('change',()=>{m.innerHTML=modelOpts(b.value);calc();});
+  m.addEventListener('change',calc);
+  card.querySelector('.card-remove').addEventListener('click',()=>{card.remove();refreshRemovable(camerasEl);calc();});
+  refreshRemovable(camerasEl);calc();
+}
+function addShoot(){
+  const card=document.createElement('div');card.className='card';
+  const d=PROJECT_DEFAULTS[PROJECT_TYPES[0]];
+  card.innerHTML=`<button class="card-remove" title="Remove">&times;</button>
+    <div class="card-grid2">
+      <div class="field"><label>Project type</label><select class="s-type">${typeOpts()}</select></div>
+      <div class="field"><label>Capture format</label><div class="toggle-group s-format"><button data-fmt="raw" class="active">RAW</button><button data-fmt="rawjpeg">RAW + JPEG</button></div></div>
+    </div>
+    ${sliderField('s-shoots','Shoots / year',d.shoots,0,100,1,'')}
+    ${sliderField('s-shot','Images shot / shoot',d.shot,0,10000,100,'total on the card')}
+    ${sliderField('s-del','Images delivered / shoot',d.delivered,0,2000,25,'final edited JPEGs you keep')}`;
+  shootsEl.appendChild(card);
+  const t=card.querySelector('.s-type');
+  const shoots=wireSlider(card,'s-shoots',calc);
+  let delTouched=false;
+  const shot=wireSlider(card,'s-shot',()=>{if(!delTouched){del.set(Math.round(shot.get()*DELIVERED_RATIO));}calc();});
+  const del=wireSlider(card,'s-del',()=>{delTouched=true;calc();});
+  t.addEventListener('change',()=>{const dd=PROJECT_DEFAULTS[t.value];if(dd){shoots.set(dd.shoots);shot.set(dd.shot);del.set(dd.delivered);delTouched=false;}calc();});
+  card.querySelectorAll('.s-format button').forEach(btn=>btn.addEventListener('click',()=>{card.querySelectorAll('.s-format button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');calc();}));
+  card.querySelector('.card-remove').addEventListener('click',()=>{card.remove();refreshRemovable(shootsEl);calc();});
+  refreshRemovable(shootsEl);calc();
+}
+document.getElementById('addCam').addEventListener('click',addCamera);
+document.getElementById('addShoot').addEventListener('click',addShoot);
+const bufferEl=document.getElementById('buffer'),bufferVal=document.getElementById('bufferVal');
+bufferEl.addEventListener('input',()=>{bufferVal.textContent=bufferEl.value+'%';calc();});
+document.querySelectorAll('.region-toggle button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.region-toggle button').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active'); region=btn.dataset.region; calc();
+}));
+const suggestDrive=tb=>{for(const s of DRIVE_SIZES){if(s>=tb)return s;}return DRIVE_SIZES[DRIVE_SIZES.length-1];};
+
+function renderDriveLinks(list){
+  if(!list||!list.length) return '<p class="disclosure" style="margin-top:0;">No option at this size — see the other type.</p>';
+  return list.map(d=>`<a class="drive-link" href="${d[region]||'#'}" target="_blank" rel="noopener sponsored"><span>${d.name}</span><span class="arrow">→</span></a>`).join('');
+}
+
+function calc(){
+  const camCards=[...camerasEl.querySelectorAll('.card')];
+  let sizes=[];
+  camCards.forEach(c=>{const b=c.querySelector('.c-brand').value,m=c.querySelector('.c-model').value;const s=CAMERAS[b]&&CAMERAS[b][m];if(s)sizes.push(s);});
+  const avgMB=sizes.length?sizes.reduce((a,x)=>a+x,0)/sizes.length:0;
+
+  const shootCards=[...shootsEl.querySelectorAll('.card')];
+  let totalGB=0;const parts=[];
+  shootCards.forEach(c=>{
+    const type=c.querySelector('.s-type').value;
+    const shoots=parseFloat(c.querySelector('.s-shoots-num').value)||0;
+    const shot=parseFloat(c.querySelector('.s-shot-num').value)||0;
+    const delivered=parseFloat(c.querySelector('.s-del-num').value)||0;
+    const fmt=c.querySelector('.s-format .active').dataset.fmt;
+    let rawPer=avgMB; if(fmt==='rawjpeg')rawPer=avgMB*JPEG_CAPTURE_MULT;
+    const gb=((shoots*shot*rawPer)+(shoots*delivered*DELIVERED_JPEG_MB))/1000;
+    totalGB+=gb;
+    if(gb>0)parts.push({label:`${type} · ${shoots} shoots`,tb:gb/1000});
+  });
+  const buffer=parseFloat(bufferEl.value)/100;
+  const totalTB=(totalGB/1000)*(1+buffer);
+
+  const resultEl=document.getElementById('result'),drivesEl=document.getElementById('drives');
+  if(totalTB<=0||avgMB<=0){resultEl.style.display='none';drivesEl.style.display='none';return;}
+  resultEl.style.display='block';drivesEl.style.display='block';
+  const shown=totalTB<1?totalTB.toFixed(2):totalTB<10?totalTB.toFixed(1):Math.round(totalTB);
+  document.getElementById('resultBig').innerHTML=`${shown}<span> TB</span>`;
+  const suggested=suggestDrive(totalTB);
+  document.getElementById('resultSuggest').textContent=`We'd suggest a ${suggested}TB drive — your year with room to spare.`;
+  document.getElementById('breakdown').innerHTML=parts.map(p=>`<div class="breakdown-row"><span>${p.label}</span><span>${p.tb<1?(p.tb*1000).toFixed(0)+' GB':p.tb.toFixed(2)+' TB'}</span></div>`).join('')+`<div class="breakdown-row" style="font-weight:700;color:var(--text);margin-top:6px;"><span>+ ${bufferEl.value}% buffer</span><span>${shown} TB total</span></div>`;
+
+  const set=DRIVES[suggested]||DRIVES[Object.keys(DRIVES).map(Number).reverse().find(s=>s>=suggested)]||{ssd:[],hdd:[]};
+  document.getElementById('drivesTitle').textContent=`Recommended ${suggested}TB drives`;
+  document.getElementById('ssdLinks').innerHTML=renderDriveLinks(set.ssd);
+  document.getElementById('hddLinks').innerHTML=renderDriveLinks(set.hdd);
+  document.getElementById('shotsafeLink').href=SHOTSAFE_URL;
+}
+addCamera();addShoot();
+
+/* Auto-resize when embedded in an iframe (Framer) — posts height to parent,
+   and the parent can listen; also works standalone (no-op if not framed). */
+function postHeight(){
+  const h = document.querySelector('.calc').offsetHeight + 48;
+  if (window.parent !== window) window.parent.postMessage({ shotsafeCalcHeight: h }, '*');
+}
+new ResizeObserver(postHeight).observe(document.querySelector('.calc'));
+window.addEventListener('load', postHeight);
+</script>
+</body>
+</html>
