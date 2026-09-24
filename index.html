@@ -162,45 +162,58 @@ const DRIVE_SIZES=[1,2,4,5,8,10,12,16,18,20,22,24];
 const SHOTSAFE_URL="https://shotsafe.co";
 
 /* ------------------------------------------------------------------
-   DRIVE RECOMMENDATIONS — curate to 4★+ drives only, from the 5
-   trusted brands (LaCie, Seagate, SanDisk, WD, Samsung). REVIEW
-   PERIODICALLY (ratings shift, models get discontinued). The widget
-   can't read live star ratings, so this list is human-curated to the
-   4★+ standard. Replace url:"#" with real affiliate links per region.
-   Keyed by suggested drive size (TB).
+   DRIVE RECOMMENDATIONS — real affiliate links (Sam's list).
+   5 trusted brands (LaCie, Seagate, SanDisk, WD, Samsung), curated.
+   Portable drives at smaller sizes, desktop drives at larger sizes.
+   Each size the calculator suggests maps to the relevant drives here.
+   REVIEW PERIODICALLY (models discontinued / ratings shift).
+   Keyed by suggested drive size (TB). uk: links live; us: add later.
 ------------------------------------------------------------------- */
+const A = id => "https://link.amazon/" + id;  // shortlink helper
 const DRIVES = {
+  1: {
+    ssd: [ {name:"Samsung SSD 1TB", uk:A("B00SabqGr")}, {name:"SanDisk Extreme 1TB", uk:A("B08cF2iV8")} ],
+    hdd: [ {name:"WD My Passport 1TB", uk:A("B0dPay9Wo")}, {name:"Seagate Portable 1TB", uk:A("B0fP93mHg")}, {name:"LaCie Mobile 1TB", uk:A("B0dYSEy4T")} ]
+  },
+  2: {
+    ssd: [ {name:"Samsung SSD 2TB", uk:A("B0iPnhKly")}, {name:"SanDisk Extreme 2TB", uk:A("B0h1tyosZ")} ],
+    hdd: [ {name:"WD My Passport 2TB", uk:A("B0aY4p9Ky")}, {name:"Seagate Portable 2TB", uk:A("B06QCi5qN")}, {name:"LaCie Mobile 2TB", uk:A("B04LooDfo")} ]
+  },
   4: {
-    ssd: [ {name:"Samsung T7 Shield 4TB", uk:"#", us:"#"}, {name:"SanDisk Extreme 4TB", uk:"#", us:"#"}, {name:"LaCie Rugged SSD 4TB", uk:"#", us:"#"} ],
-    hdd: [ {name:"WD My Passport 4TB", uk:"#", us:"#"}, {name:"Seagate Expansion 4TB", uk:"#", us:"#"}, {name:"LaCie Mobile Drive 4TB", uk:"#", us:"#"} ]
+    ssd: [ {name:"Samsung SSD 4TB", uk:A("B07EJ3qS0")}, {name:"SanDisk Extreme 4TB", uk:A("B03eaVvUW")} ],
+    hdd: [ {name:"WD My Passport 4TB", uk:A("B08tNRxKR")}, {name:"Seagate Portable 4TB", uk:A("B0halXN5d")}, {name:"LaCie Mobile 4TB", uk:A("B00IISCFD")} ]
   },
   5: {
-    ssd: [ {name:"Samsung T7 Shield 4TB", uk:"#", us:"#"}, {name:"SanDisk Extreme 4TB", uk:"#", us:"#"} ],
-    hdd: [ {name:"WD My Passport 5TB", uk:"#", us:"#"}, {name:"Seagate Expansion 5TB", uk:"#", us:"#"}, {name:"LaCie Mobile Drive 5TB", uk:"#", us:"#"} ]
+    ssd: [ {name:"SanDisk Extreme 4TB", uk:A("B03eaVvUW")}, {name:"Samsung SSD 4TB", uk:A("B07EJ3qS0")} ],
+    hdd: [ {name:"WD My Passport 5TB", uk:A("B0ijuoMJs")}, {name:"Seagate Portable 5TB", uk:A("B0487Xoj8")}, {name:"LaCie Mobile 5TB", uk:A("B03gihg2r")} ]
   },
   8: {
-    ssd: [ {name:"Samsung T7 Shield 8TB", uk:"#", us:"#"}, {name:"SanDisk Extreme 8TB", uk:"#", us:"#"} ],
-    hdd: [ {name:"WD Elements Desktop 8TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 8TB", uk:"#", us:"#"}, {name:"LaCie d2 Professional 8TB", uk:"#", us:"#"} ]
+    ssd: [ {name:"SanDisk Extreme 8TB", uk:A("B03UsSUzx")} ],
+    hdd: [ {name:"WD My Passport 6TB", uk:A("B01bWOnnj")}, {name:"Seagate Expansion 8TB", uk:A("B062MyBhO")}, {name:"LaCie d2 8TB", uk:A("B0cBUxqSx")} ]
   },
   10: {
-    ssd: [ {name:"Samsung T7 Shield 8TB", uk:"#", us:"#"} ],
-    hdd: [ {name:"WD Elements Desktop 10TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 10TB", uk:"#", us:"#"} ]
+    ssd: [],
+    hdd: [ {name:"WD Elements Desktop 10TB", uk:A("B0fXDa3Av")}, {name:"Seagate Expansion Desktop 10TB", uk:A("B01gKVoC0")}, {name:"LaCie d2 10TB", uk:A("B0132Svrt")} ]
   },
   12: {
-    ssd: [ {name:"Samsung T7 Shield 8TB", uk:"#", us:"#"} ],
-    hdd: [ {name:"WD Elements Desktop 12TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 12TB", uk:"#", us:"#"}, {name:"LaCie d2 Professional 12TB", uk:"#", us:"#"} ]
+    ssd: [],
+    hdd: [ {name:"WD Elements Desktop 12TB", uk:A("B04IZCd0S")}, {name:"Seagate Expansion Desktop 12TB", uk:A("B0j9hI9Ts")} ]
   },
   16: {
     ssd: [],
-    hdd: [ {name:"WD Elements Desktop 16TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 16TB", uk:"#", us:"#"}, {name:"LaCie d2 Professional 16TB", uk:"#", us:"#"} ]
+    hdd: [ {name:"WD Elements Desktop 16TB", uk:A("B05FoD44r")}, {name:"Seagate Expansion Desktop 16TB", uk:A("B0ejHhBFI")}, {name:"LaCie d2 16TB", uk:A("B0d955umF")} ]
   },
   18: {
     ssd: [],
-    hdd: [ {name:"WD Elements Desktop 18TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 18TB", uk:"#", us:"#"} ]
+    hdd: [ {name:"WD Elements Desktop 18TB", uk:A("B05FoD44r")} ]
   },
   20: {
     ssd: [],
-    hdd: [ {name:"WD Elements Desktop 20TB", uk:"#", us:"#"}, {name:"Seagate Expansion Desktop 20TB", uk:"#", us:"#"} ]
+    hdd: [ {name:"WD Elements Desktop 20TB", uk:A("B0hGobqjV")}, {name:"Seagate Expansion Desktop 20TB", uk:A("B03o5aZaD")}, {name:"LaCie d2 20TB", uk:A("B01URUmY1")} ]
+  },
+  24: {
+    ssd: [],
+    hdd: [ {name:"WD Elements Desktop 24TB", uk:A("B028gYbMU")}, {name:"Seagate Expansion Desktop 24TB", uk:A("B01SP6eSX")}, {name:"LaCie d2 24TB", uk:A("B0beGNKeV")} ]
   }
 };
 
@@ -274,7 +287,7 @@ const suggestDrive=tb=>{for(const s of DRIVE_SIZES){if(s>=tb)return s;}return DR
 
 function renderDriveLinks(list){
   if(!list||!list.length) return '<p class="disclosure" style="margin-top:0;">No option at this size; see the other type.</p>';
-  return list.map(d=>`<a class="drive-link" href="${d[region]||'#'}" target="_blank" rel="noopener sponsored"><span>${d.name}</span><span class="arrow">→</span></a>`).join('');
+  return list.map(d=>`<a class="drive-link" href="${d[region]||d.uk||'#'}" target="_blank" rel="noopener sponsored"><span>${d.name}</span><span class="arrow">→</span></a>`).join('');
 }
 
 function calc(){
