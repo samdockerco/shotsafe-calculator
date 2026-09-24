@@ -249,8 +249,8 @@ function addShoot(){
       <div class="field"><label>Capture format</label><div class="toggle-group s-format"><button data-fmt="raw" class="active">RAW</button><button data-fmt="rawjpeg">RAW + JPEG</button></div></div>
     </div>
     ${sliderField('s-shoots','Shoots / year',d.shoots,0,100,1,'')}
-    ${sliderField('s-shot','Images shot / shoot',d.shot,0,10000,100,'total on the card')}
-    ${sliderField('s-del','Images delivered / shoot',d.delivered,0,2000,25,'final edited JPEGs you keep')}`;
+    ${sliderField('s-shot','Avg images shot / shoot',d.shot,0,10000,100,'average total on the cards')}
+    ${sliderField('s-del','Avg images delivered / shoot',d.delivered,0,2000,25,'average final edited JPEGs delivered to client')}`;
   shootsEl.appendChild(card);
   const t=card.querySelector('.s-type');
   const shoots=wireSlider(card,'s-shoots',calc);
